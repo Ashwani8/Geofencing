@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Geofencing</string>
+    <string name="add_geofence">Add Geofences</string>
+    <string name="add_geofences">Add Geofences</string>
+</resources>
