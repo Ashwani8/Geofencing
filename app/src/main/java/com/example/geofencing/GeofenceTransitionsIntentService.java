@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
     // step 1 implement method
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        // use google documentation https://developer.android.com/training/location/geofencing#CreateAdd
         // step 3 get geo fencing data from the intent and check for errors.
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent); // 3a create object
         if(geofencingEvent.hasError()){
@@ -36,6 +38,15 @@ public class GeofenceTransitionsIntentService extends IntentService {
                     geofencingEvent.getErrorCode());
             Log.e(TAG, errorMessage);
             return;
+        }
+        // step 4a  Get the transition type. Enter (2), exit 2
+         int geofenceTransition = geofencingEvent.getGeofenceTransition();
+
+        // 4b Test that the reported transition was of interest.
+        if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
+            geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
+            // Get the geofences that were triggered. A single event can trigger
+            // multiple geofences.
         }
     }
 }
