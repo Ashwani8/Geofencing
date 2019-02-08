@@ -64,7 +64,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
             );
             // Send notification and log the transition details. step 5 create sendNotification helper method
            // this is where I need to add media code
-
+            sendNotification(geofenceTransitionDetails);
             Log.i(TAG, geofenceTransitionDetails);
         }else {
             // Log the error.
