@@ -72,7 +72,14 @@ public class GeofenceTransitionsIntentService extends IntentService {
                     geofenceTransition));
         }
     }
-    // 4d build the method to
+
+    // step 5a
+    private void sendNotification(String geofenceTransitionDetails) {
+
+        // the sample code deprecated methods so i am not going to build it
+    }
+
+    // 4d build the method to extract id and concatenate string
 
     /**
      * Gets transition details and returns them as a formatted string.
@@ -98,5 +105,6 @@ public class GeofenceTransitionsIntentService extends IntentService {
     }
 
     private String getTransitionString(int geofenceTransition) {
+        return "Hi";
     }
 }
