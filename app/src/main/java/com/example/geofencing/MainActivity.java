@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -44,8 +45,27 @@ public class MainActivity extends AppCompatActivity {
         // Empty list for storing geofences.
         mGeofenceList = new ArrayList<>();
         // Get the geofences used. Geofence data is hard coded in this project.
-        populateGeofenceList();
+        populateGeofenceList(); // step 7 populate array list
         mGeofencingClient = LocationServices.getGeofencingClient(this);
+    }
+
+    /**
+     * Builds and returns a GeofencingRequest. Specifies the list of geofences to be monitored.
+     * Also specifies how the geofence notifications are initially triggered.
+     */
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+
+        // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
+        // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
+        // is already inside that geofence.
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+
+        // Add the geofences to be monitored by geofencing service.
+        builder.addGeofences(mGeofenceList);
+
+        // Return a GeofencingRequest.
+        return builder.build();
     }
 
     /**
@@ -85,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     public void addGeofencesButtonHandler(View view) {
     }
 
-    // permission adopted from campus on phone app
+    // step 6 permission adopted from campus on phone app
     private void getLocationPermission() {
         /*
          * Request location permission, so that we can get the location of the
