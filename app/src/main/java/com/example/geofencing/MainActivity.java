@@ -6,6 +6,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
      * The list of geofences used in this project.
      */
     private ArrayList<Geofence> mGeofenceList;
+    /**
+     * Used when requesting to add or remove geofences.
+     */
+    private PendingIntent mGeofencePendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Empty list for storing geofences.
         mGeofenceList = new ArrayList<>();
+
+        // Initially set the PendingIntent used in addGeofences() and removeGeofences() to null.
+        mGeofencePendingIntent = null;
         // Get the geofences used. Geofence data is hard coded in this project.
         populateGeofenceList(); // step 7 populate array list
         mGeofencingClient = LocationServices.getGeofencingClient(this);
@@ -68,6 +77,24 @@ public class MainActivity extends AppCompatActivity {
         return builder.build();
     }
 
+    /**
+     * Gets a PendingIntent to send with the request to add or remove Geofences. Location Services
+     * issues the Intent inside this PendingIntent whenever a geofence transition occurs for the
+     * current list of geofences.
+     *
+     * @return A PendingIntent for the IntentService that handles geofence transitions.
+     */
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (mGeofencePendingIntent != null) {
+            return mGeofencePendingIntent;
+        }
+        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofences() and removeGeofences().
+        mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return mGeofencePendingIntent;
+    }
     /**
      * This sample hard codes geofence data. A real app might dynamically create geofences based on
      * the user's location.
