@@ -1,6 +1,7 @@
 package com.example.geofencing;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -9,9 +10,11 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
@@ -19,15 +22,17 @@ import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
-//    private static final int REQUEST_LOCATION_PERMISSION = 1;
+    //    private static final int REQUEST_LOCATION_PERMISSION = 1;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private boolean mLocationPermissionGranted =  false;
+    private boolean mLocationPermissionGranted = false;
 
     /**
      * Provides access to the Geofencing API.
@@ -43,11 +48,16 @@ public class MainActivity extends AppCompatActivity {
      */
     private PendingIntent mGeofencePendingIntent;
 
+    // Buttons for kicking off the process of adding  geofences.
+    private Button mAddGeofencesButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // get the user interface
+        mAddGeofencesButton = (Button) findViewById(R.id.add_geofences_button);
         // Empty list for storing geofences.
         mGeofenceList = new ArrayList<>();
 
@@ -62,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
      * Builds and returns a GeofencingRequest. Specifies the list of geofences to be monitored.
      * Also specifies how the geofence notifications are initially triggered.
      */
+    // step 7
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
 
@@ -84,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @return A PendingIntent for the IntentService that handles geofence transitions.
      */
+    // step 8
     private PendingIntent getGeofencePendingIntent() {
         // Reuse the PendingIntent if we already have it.
         if (mGeofencePendingIntent != null) {
@@ -95,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return mGeofencePendingIntent;
     }
+
     /**
      * This sample hard codes geofence data. A real app might dynamically create geofences based on
      * the user's location.
@@ -129,7 +142,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void addGeofencesButtonHandler(View view) {
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            getLocationPermission();
+            //    Activity#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for Activity#requestPermissions for more details.
+            return;
+        }
+
+        mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Geofences added
+//                        Toast.makeText(this, "new geofence added",Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onSuccess: Geofence added succesfully");
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Failed to add geofences
+                        Log.e("Exception: %s", e.getMessage());
+                    }
+                });
     }
 
     // step 6 permission adopted from campus on phone app
