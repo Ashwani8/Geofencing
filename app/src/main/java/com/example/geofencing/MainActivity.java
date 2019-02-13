@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         // Geofences added
 //                        Toast.makeText(this, "new geofence added",Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "onSuccess: Geofence added succesfully");
+                        Log.d(TAG, "onSuccess: Geofence added successfully");
                     }
                 })
                 .addOnFailureListener(this, new OnFailureListener() {

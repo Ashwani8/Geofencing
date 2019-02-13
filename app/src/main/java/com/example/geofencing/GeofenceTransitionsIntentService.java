@@ -3,6 +3,7 @@ package com.example.geofencing;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -15,8 +16,13 @@ import java.util.List;
 import androidx.annotation.Nullable;
 
 public class GeofenceTransitionsIntentService extends IntentService {
+
     private static final String TAG = "gfservice";
     private Context context;
+    MediaPlayer mMediaPlayer;
+    private static final int JOB_ID = 123;
+    private static final String CHANNEL_ID = "channel_01";
+
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
@@ -65,6 +71,10 @@ public class GeofenceTransitionsIntentService extends IntentService {
             // Send notification and log the transition details. step 5 create sendNotification helper method
            // this is where I need to add media code
             sendNotification(geofenceTransitionDetails);
+            // Create and setup the MediaPlayer for the audio associated with the current place
+            mMediaPlayer = MediaPlayer.create(this, R.raw.om_jai);
+            // starts the audio file
+            mMediaPlayer.start(); // no need to call prepare
             Log.i(TAG, geofenceTransitionDetails);
         }else {
             // Log the error.
